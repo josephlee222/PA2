@@ -1,0 +1,109 @@
+﻿@model IEnumerable<PA2.Models.Orders>
+
+@{
+    ViewBag.Title = "Orders";
+}
+
+@if (ViewBag.msg != null)
+{
+    <div class="alert alert-danger" style="margin-top: 2rem">
+        @ViewBag.msg
+    </div>
+}
+
+@if (ViewBag.successMsg != null)
+{
+    <div class="alert alert-success" style="margin-top: 2rem">
+        @ViewBag.successMsg
+    </div>
+}
+
+@if (Session["CustomerAdmin"] as string == "1")
+{
+    <h2>Manage orders (Admin)</h2>
+} else
+{
+    <h2>Your orders</h2>
+}
+
+<p>
+    @Html.ActionLink("Create New", "Create") |
+    @if (Session["CustomerAdmin"] as string == "1")
+    {
+        @Html.ActionLink("Manage Users", "Users") <text> |</text>
+    }
+    @Html.ActionLink("Logout", "Logout")
+</p>
+<table class="table">
+    <tr>
+        @if (Session["CustomerAdmin"] as string == "1")
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.Customer.CustomerUsername)
+            </th>
+        }
+        <th>
+            @Html.DisplayNameFor(model => model.OrderDescription)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OrderStatus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeliveryAddress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeliveryDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeliveryTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeliveryContact)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (Session["CustomerAdmin"] as string == "1")
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.CustomerUsername)
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryContact)
+            </td>
+            <td>
+                @if (item.OrderStatus == "Processing" | Session["CustomerAdmin"] as string == "1")
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.OrderID })<text> |</text>
+                    @Html.ActionLink("Delete", "Delete", new { id = item.OrderID })<text> |</text>
+                }
+                else
+                {
+                    <text>Edit |</text>
+                    <text>Delete |</text>
+                }
+                @Html.ActionLink("Details", "Details", new { id = item.OrderID })
+            </td>
+        </tr>
+    }
+
+</table>

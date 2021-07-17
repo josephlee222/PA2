@@ -1,0 +1,59 @@
+﻿@model PA2.Models.Customer
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@if (ViewBag.msg != null)
+{
+    <div class="alert alert-danger" style="margin-top: 2rem">
+        @ViewBag.msg
+    </div>
+}
+
+@if (ViewBag.successMsg != null)
+{
+    <div class="alert alert-success" style="margin-top: 2rem">
+        @ViewBag.successMsg
+    </div>
+}
+
+<h2>Welcome to ABC Food Catering Portal</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Customer Login</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerUsername, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustomerUsername, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CustomerUsername, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustomerPassword, new { htmlAttributes = new { @class = "form-control", @type = "password" } })
+                @Html.ValidationMessageFor(model => model.CustomerPassword, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10" style="display:flex; align-items:center">
+                <input type="submit" value="Login" class="btn btn-default" style="margin-right: 1rem" />
+                @Html.ActionLink("No account? Register", "Register")
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

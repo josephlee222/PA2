@@ -1,0 +1,64 @@
+﻿@model IEnumerable<PA2.Models.Customer>
+
+@{
+    ViewBag.Title = "Manage Users";
+}
+
+@if (ViewBag.msg != null)
+{
+    <div class="alert alert-danger" style="margin-top: 2rem">
+        @ViewBag.msg
+    </div>
+}
+
+@if (ViewBag.successMsg != null)
+{
+    <div class="alert alert-success" style="margin-top: 2rem">
+        @ViewBag.successMsg
+    </div>
+}
+
+<h2>Manage Users</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateUser")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CustomerUsername)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CustomerAdmin)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustomerUsername)
+            </td>
+            <td>
+                @if (item.CustomerAdmin == "1")
+                {
+                    <text>Yes</text>
+                }
+                else
+                {
+                    <text>No</text>
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditUser", new { id = item.CustomerID }) |
+                @Html.ActionLink("Delete", "DeleteUser", new { id = item.CustomerID })
+            </td>
+        </tr>
+    }
+
+</table>
+
+<p>
+    @Html.ActionLink("Back to Orders", "Orders")
+</p>
