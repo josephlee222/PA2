@@ -56,6 +56,7 @@ namespace PA2.Controllers
                 if (data != null)
                 {
                     Session["CustomerID"] = data.CustomerID;
+                    Session["CustomerUsername"] = data.CustomerUsername;
                     Session["CustomerAdmin"] = data.CustomerAdmin;
                     return RedirectToAction("Orders");
                 }
@@ -258,15 +259,15 @@ namespace PA2.Controllers
                 {
                     if (orders.OrderStatus == "Processing" && orders.CustomerID.ToString() == Session["CustomerID"].ToString() || Session["CustomerAdmin"] as string == "1") {
                         List<object> order = new List<object>
-                    {
-                        orders.OrderDescription,
-                        orders.OrderStatus,
-                        orders.DeliveryAddress,
-                        orders.DeliveryDate,
-                        orders.DeliveryTime,
-                        orders.DeliveryContact,
-                        orders.OrderID
-                    };
+                        {
+                            orders.OrderDescription,
+                            orders.OrderStatus,
+                            orders.DeliveryAddress,
+                            orders.DeliveryDate,
+                            orders.DeliveryTime,
+                            orders.DeliveryContact,
+                            orders.OrderID
+                        };
 
                         object[] orderThings = order.ToArray();
                         int result = Db.Database.ExecuteSqlCommand("UPDATE Orders SET OrderDescription=@p0, OrderStatus=@p1, DeliveryAddress=@p2, DeliveryDate=@p3, DeliveryTime=@p4, DeliveryContact=@p5 WHERE OrderID=@p6", orderThings);
@@ -318,7 +319,7 @@ namespace PA2.Controllers
                     }
                     else
                     {
-                        return RedirectWithMessage("errorMessage", "Cannot get order, order does not exist", "Orders");
+                        return RedirectWithMessage("errorMessage", "Unable to delete, order does not exist", "Orders");
                     }
                 }
                 catch (Exception ex)
@@ -396,11 +397,98 @@ namespace PA2.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult CreateUser(Customer customer)
+        {
+            if (Session["CustomerID"] != null && Session["CustomerAdmin"] as string == "1")
+            {
+                try
+                {
+                    List<object> NewCustomer = new List<object>
+                    {
+                        customer.CustomerUsername,
+                        hashMd5(customer.CustomerPassword),
+                        customer.CustomerAdmin
+                    };
+                    object[] customerThings = NewCustomer.ToArray();
+                    int result = Db.Database.ExecuteSqlCommand("INSERT INTO Customers (CustomerUsername, CustomerPassword, CustomerAdmin) VALUES (@p0, @p1, @p2)", customerThings);
+                    if (result > 0)
+                    {
+                        return RedirectWithMessage("successMessage", "User has been created successfully", "Users");
+                    } else
+                    {
+                        ViewBag.msg = "User creation not successful, please try again";
+                        return View();
+                    }
+                } catch (Exception ex)
+                {
+                    ViewBag.msg = "Something went wrong, please try again. (" + ex.Message + ")";
+                    return View();
+                }
+                
+            } else
+            {
+                return RedirectWithMessage("errorMessage", "Insufficent permissions to create user", "Orders");
+            }
+        }
+
+        public ActionResult DeleteUser(int id)
+        {
+            if (Session["CustomerID"] != null && Session["CustomerAdmin"] as string == "1")
+            {
+                try
+                {
+                    var data = Db.Customers.SqlQuery("SELECT * FROM Customers WHERE CustomerID = " + id).SingleOrDefault();
+
+                    if (data != null)
+                    {
+                        return View(data);
+                    } else
+                    {
+                        return RedirectWithMessage("errorMessage", "Unable to delete, user does not exist", "Users");
+                    }
+                } catch (Exception ex)
+                {
+                    return RedirectWithMessage("errorMessage", "Something went wrong, please try again. (" + ex.Message + ")", "Users");
+                }
+            } else
+            {
+                return RedirectWithMessage("errorMessage", "Insufficent permissions to delete user", "Orders");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteUser(Customer customer)
+        {
+            if (Session["CustomerID"] != null && Session["CustomerAdmin"] as string == "1")
+            {
+                try
+                {
+                    int result = Db.Database.ExecuteSqlCommand("DELETE FROM Customers WHERE CustomerID = " + customer.CustomerID);
+
+                    if (result > 0)
+                    {
+                        return RedirectWithMessage("successMessage", "User has been deleted successfully", "Users");
+                    } else
+                    {
+                        return RedirectWithMessage("errorMessage", "Unable to delete user, please try again", "Users");
+                    }
+                } catch (Exception ex)
+                {
+                    return RedirectWithMessage("errorMessage", "Something went wrong, please try again. (" + ex.Message + ")", "Users");
+                }
+            } else
+            {
+                return RedirectWithMessage("errorMessage", "Insufficent permissions to delete user", "Orders");
+            }
+        }
+
         // Logout section
         public ActionResult Logout()
         {
             // Logout, clear session and redirect to login with successful logout message
             Session["CustomerID"] = null;
+            Session["CustomerUsername"] = null;
             Session["CustomerAdmin"] = null;
             return RedirectWithMessage("successMessage", "Successfully logged out", "Index");
         }

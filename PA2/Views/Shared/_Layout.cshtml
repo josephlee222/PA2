@@ -20,8 +20,12 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    
                 </ul>
+                @if (Session["CustomerUsername"] != null)
+                {
+                    <p class="navbar-text navbar-right" style="margin-right:0px !important">Signed in as @Session["CustomerUsername"]</p>
+                }
             </div>
         </div>
     </div>
