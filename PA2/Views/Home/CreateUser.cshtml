@@ -28,7 +28,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.CustomerUsername, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.CustomerUsername, new { htmlAttributes = new { @class = "form-control", @required = "required"} })
+                @Html.EditorFor(model => model.CustomerUsername, new { htmlAttributes = new { @class = "form-control", @required = "required", @placeholder = "Customer Username" } })
                 @Html.ValidationMessageFor(model => model.CustomerUsername, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -36,7 +36,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.CustomerPassword, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.CustomerPassword, new { htmlAttributes = new { @class = "form-control", @type = "password", @required = "required" } })
+                @Html.EditorFor(model => model.CustomerPassword, new { htmlAttributes = new { @class = "form-control", @type = "password", @required = "required", @placeholder = "Customer Password" } })
                 @Html.ValidationMessageFor(model => model.CustomerPassword, "", new { @class = "text-danger" })
             </div>
         </div>

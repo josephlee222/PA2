@@ -7,13 +7,27 @@
     options.Add(1, "Yes");
 }
 
+@if (ViewBag.msg != null)
+{
+    <div class="alert alert-danger" style="margin-top: 2rem">
+        @ViewBag.msg
+    </div>
+}
+
+@if (ViewBag.successMsg != null)
+{
+    <div class="alert alert-success" style="margin-top: 2rem">
+        @ViewBag.successMsg
+    </div>
+}
+
 <h2>Edit User</h2>
 
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>@Model.CustomerUsername</h4>
         <hr />
@@ -31,7 +45,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.CustomerPassword, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.CustomerPassword, new { htmlAttributes = new { @class = "form-control", @type = "password", @Value = "", @placeholder = "Password (Unchanged)"} })
+                @Html.EditorFor(model => model.CustomerPassword, new { htmlAttributes = new { @class = "form-control", @type = "password", @Value = "", @placeholder = "Password (Unchanged)" } })
                 @Html.ValidationMessageFor(model => model.CustomerPassword, "", new { @class = "text-danger" })
             </div>
         </div>

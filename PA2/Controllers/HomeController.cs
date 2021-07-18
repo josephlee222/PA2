@@ -533,11 +533,11 @@ namespace PA2.Controllers
                     if (result > 0 )
                     {
                         ViewBag.successMsg = "Customer data has been edited successfully.";
-                        return View();
+                        return View(customer);
                     } else
                     {
-                        ViewBag.successMsg = "Customer data has not been edited successfully, please try again.";
-                        return View();
+                        ViewBag.msg = "Customer data has not been edited successfully, please try again.";
+                        return View(customer);
                     }
                 } catch (Exception ex)
                 {
