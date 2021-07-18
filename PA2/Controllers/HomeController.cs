@@ -445,7 +445,7 @@ namespace PA2.Controllers
                         return View(data);
                     } else
                     {
-                        return RedirectWithMessage("errorMessage", "Unable to delete, user does not exist", "Users");
+                        return RedirectWithMessage("errorMessage", "Unable to delete, customer does not exist", "Users");
                     }
                 } catch (Exception ex)
                 {
@@ -468,10 +468,10 @@ namespace PA2.Controllers
 
                     if (result > 0)
                     {
-                        return RedirectWithMessage("successMessage", "User has been deleted successfully", "Users");
+                        return RedirectWithMessage("successMessage", "customer has been deleted successfully", "Users");
                     } else
                     {
-                        return RedirectWithMessage("errorMessage", "Unable to delete user, please try again", "Users");
+                        return RedirectWithMessage("errorMessage", "Unable to delete customer, please try again", "Users");
                     }
                 } catch (Exception ex)
                 {
@@ -480,6 +480,72 @@ namespace PA2.Controllers
             } else
             {
                 return RedirectWithMessage("errorMessage", "Insufficent permissions to delete user", "Orders");
+            }
+        }
+
+        public ActionResult EditUser(int id)
+        {
+            if (Session["CustomerID"] != null && Session["CustomerAdmin"] as string == "1")
+            {
+                try
+                {
+                    var data = Db.Customers.SqlQuery("SELECT * FROM Customers WHERE CustomerID = " + id).SingleOrDefault();
+                    if (data != null)
+                    {
+                        return View(data);
+                    } else
+                    {
+                        return RedirectWithMessage("errorMessage", "Unable to edit, customer ", "Users");
+                    }
+                } catch (Exception ex)
+                {
+                    return RedirectWithMessage("errorMessage", "Something went wrong, please try again. (" + ex.Message + ")", "Users");
+                }
+            } else
+            {
+                return RedirectWithMessage("errorMessage", "Insufficent permissions to edit user", "Orders");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EditUser(Customer customer)
+        {
+            if (Session["CustomerID"] != null && Session["CustomerAdmin"] as string == "1")
+            {
+                try
+                {
+                    List<object> NewCustomer = new List<object>
+                    {
+                        customer.CustomerID,
+                        customer.CustomerUsername,
+                        hashMd5(customer.CustomerPassword),
+                        customer.CustomerAdmin
+                    };
+                    object[] customerThings = NewCustomer.ToArray();
+                    int result = 0;
+                    if (customer.CustomerPassword == "")
+                    {
+                        result = Db.Database.ExecuteSqlCommand("UPDATE Customers SET CustomerUsername = @p1, CustomerAdmin= @p3 WHERE CustomerID = @p0", customerThings);
+                    } else
+                    {
+                        result = Db.Database.ExecuteSqlCommand("UPDATE Customers SET CustomerUsername = @p1, CustomerPassword = @p2, CustomerAdmin= @p3 WHERE CustomerID = @p0", customerThings);
+                    }
+                    if (result > 0 )
+                    {
+                        ViewBag.successMsg = "Customer data has been edited successfully.";
+                        return View();
+                    } else
+                    {
+                        ViewBag.successMsg = "Customer data has not been edited successfully, please try again.";
+                        return View();
+                    }
+                } catch (Exception ex)
+                {
+                    return RedirectWithMessage("errorMessage", "Something went wrong, please try again. (" + ex.Message + ")", "Users");
+                }
+            } else
+            {
+                return RedirectWithMessage("errorMessage", "Insufficent permissions to edit user", "Orders");
             }
         }
 
