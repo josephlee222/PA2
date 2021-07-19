@@ -46,6 +46,9 @@
             @Html.DisplayNameFor(model => model.OrderDescription)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.OrderEmail)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.OrderStatus)
         </th>
         <th>
@@ -74,6 +77,9 @@
             }
             <td>
                 @Html.DisplayFor(modelItem => item.OrderDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderEmail)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.OrderStatus)

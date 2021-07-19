@@ -14,6 +14,8 @@ namespace PA2.Models
         [DataType(DataType.MultilineText)]
         [DisplayName("Description")]
         public string OrderDescription { get; set; }
+        [DisplayName("E-mail")]
+        public string OrderEmail { get; set; }
         [DisplayName("Status")]
         public string OrderStatus { get; set; }
         [DisplayName("Delivery Address")]
@@ -24,7 +26,7 @@ namespace PA2.Models
         [DisplayName("Delivery Time")]
         public TimeSpan DeliveryTime { get; set; }
         [DisplayName("Contact")]
-        public int DeliveryContact { get; set; }
+        public string DeliveryContact { get; set; }
         [ForeignKey("CustomerID")]
         public virtual Customer Customer { get; set; }
     }

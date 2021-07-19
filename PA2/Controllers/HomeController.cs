@@ -82,23 +82,32 @@ namespace PA2.Controllers
         {
             try
             {
-                List<object> register = new List<object>
+                int check_exist = Db.Customers.SqlQuery("SELECT * FROM Customers WHERE CustomerUsername= '" + customer.CustomerUsername + "'").Count();
+                if (check_exist == 0)
                 {
-                    customer.CustomerUsername,
-                    hashMd5(customer.CustomerPassword)
-                };
+                    List<object> register = new List<object>
+                    {
+                        customer.CustomerUsername,
+                        hashMd5(customer.CustomerPassword)
+                    };
 
-                object[] registerThings = register.ToArray();
-                int result = Db.Database.ExecuteSqlCommand("INSERT INTO Customers (CustomerUsername, CustomerPassword, CustomerAdmin) VALUES (@p0, @p1, 0)", registerThings);
+                    object[] registerThings = register.ToArray();
+                    int result = Db.Database.ExecuteSqlCommand("INSERT INTO Customers (CustomerUsername, CustomerPassword, CustomerAdmin) VALUES (@p0, @p1, 0)", registerThings);
 
-                if (result > 0)
-                {
-                    return RedirectWithMessage("successMessage", "Registration successful! Thank you for signing up with ABC Food Catering.", "Index");
+                    if (result > 0)
+                    {
+                        return RedirectWithMessage("successMessage", "Registration successful! Thank you for signing up with ABC Food Catering.", "Index");
+                    }
+                    else
+                    {
+                        ViewBag.msg = "Error while registering, please try again.";
+                    }
+                    return View();
                 } else
                 {
-                    ViewBag.msg = "Error while registering, please try again.";
+                    ViewBag.msg = "Error while registering, user already exist.";
+                    return View();
                 }
-                return View();
             } catch (Exception ex)
             {
                 ViewBag.msg = "Something went wrong, please try again. (" + ex.Message + ")";
@@ -154,11 +163,12 @@ namespace PA2.Controllers
                         orders.DeliveryAddress,
                         orders.DeliveryDate,
                         orders.DeliveryTime,
-                        orders.DeliveryContact
+                        orders.DeliveryContact,
+                        orders.OrderEmail
                     };
 
                     object[] orderThings = order.ToArray();
-                    int result = Db.Database.ExecuteSqlCommand("INSERT INTO Orders (CustomerID, OrderDescription, OrderStatus, DeliveryAddress, DeliveryDate, DeliveryTime, DeliveryContact) VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)", orderThings);
+                    int result = Db.Database.ExecuteSqlCommand("INSERT INTO Orders (CustomerID, OrderDescription, OrderStatus, DeliveryAddress, DeliveryDate, DeliveryTime, DeliveryContact, OrderEmail) VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7)", orderThings);
 
                     if (result > 0)
                     {
@@ -266,11 +276,12 @@ namespace PA2.Controllers
                             orders.DeliveryDate,
                             orders.DeliveryTime,
                             orders.DeliveryContact,
-                            orders.OrderID
+                            orders.OrderID,
+                            orders.OrderEmail
                         };
 
                         object[] orderThings = order.ToArray();
-                        int result = Db.Database.ExecuteSqlCommand("UPDATE Orders SET OrderDescription=@p0, OrderStatus=@p1, DeliveryAddress=@p2, DeliveryDate=@p3, DeliveryTime=@p4, DeliveryContact=@p5 WHERE OrderID=@p6", orderThings);
+                        int result = Db.Database.ExecuteSqlCommand("UPDATE Orders SET OrderDescription=@p0,OrderEmail=@p7, OrderStatus=@p1, DeliveryAddress=@p2, DeliveryDate=@p3, DeliveryTime=@p4, DeliveryContact=@p5 WHERE OrderID=@p6", orderThings);
 
                         if (result > 0)
                         {
@@ -404,22 +415,32 @@ namespace PA2.Controllers
             {
                 try
                 {
-                    List<object> NewCustomer = new List<object>
+                    int check_exist = Db.Customers.SqlQuery("SELECT COUNT(*) FROM Customers WHERE CustomerUsername= '" + customer.CustomerUsername + "'").Count();
+                    if (check_exist == 0)
                     {
-                        customer.CustomerUsername,
-                        hashMd5(customer.CustomerPassword),
-                        customer.CustomerAdmin
-                    };
-                    object[] customerThings = NewCustomer.ToArray();
-                    int result = Db.Database.ExecuteSqlCommand("INSERT INTO Customers (CustomerUsername, CustomerPassword, CustomerAdmin) VALUES (@p0, @p1, @p2)", customerThings);
-                    if (result > 0)
-                    {
-                        return RedirectWithMessage("successMessage", "User has been created successfully", "Users");
+                        List<object> NewCustomer = new List<object>
+                        {
+                            customer.CustomerUsername,
+                            hashMd5(customer.CustomerPassword),
+                            customer.CustomerAdmin
+                        };
+                        object[] customerThings = NewCustomer.ToArray();
+                        int result = Db.Database.ExecuteSqlCommand("INSERT INTO Customers (CustomerUsername, CustomerPassword, CustomerAdmin) VALUES (@p0, @p1, @p2)", customerThings);
+                        if (result > 0)
+                        {
+                            return RedirectWithMessage("successMessage", "User has been created successfully.", "Users");
+                        }
+                        else
+                        {
+                            ViewBag.msg = "User creation not successful, please try again.";
+                            return View();
+                        }
                     } else
                     {
-                        ViewBag.msg = "User creation not successful, please try again";
+                        ViewBag.msg = "User creation not successful, user already exist.";
                         return View();
                     }
+                    
                 } catch (Exception ex)
                 {
                     ViewBag.msg = "Something went wrong, please try again. (" + ex.Message + ")";
